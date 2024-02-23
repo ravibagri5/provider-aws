@@ -83,6 +83,8 @@ spec:
                   authTokenSecretRef:
                     description: Password used to access a password protected server.
                       Can be specified only if transit_encryption_enabled = true.
+                      If you set autoGeneratePassword to true,the Secret referenced here will be created or updated with generated
+                      password if it does not already contain one.
                     properties:
                       key:
                         description: The key to select.
@@ -98,6 +100,12 @@ spec:
                     - name
                     - namespace
                     type: object
+                  autoGeneratePassword:
+                    description: Password for the replicationgroup. Note that this may
+                      show up in logs, and it will be stored in the state file. If true,
+                      the password will be auto-generated and stored in the Secret
+                      referenced by the authTokenSecretRef field.
+                    type: boolean
                   autoMinorVersionUpgrade:
                     description: |-
                       Specifies whether minor version engine upgrades will be applied automatically to the underlying Cache Cluster instances during the maintenance window.
@@ -1618,6 +1626,8 @@ spec:
                   authTokenSecretRef:
                     description: Password used to access a password protected server.
                       Can be specified only if transit_encryption_enabled = true.
+                      If you set autoGeneratePassword to true,the Secret referenced here will be created or updated with generated
+                      password if it does not already contain one.
                     properties:
                       key:
                         description: The key to select.
@@ -1637,6 +1647,11 @@ spec:
                     description: Strategy to use when updating the auth_token. Valid
                       values are SET, ROTATE, and DELETE. Defaults to ROTATE.
                     type: string
+                  autoGeneratePassword:
+                    description: Password for the replicationgroup. Note that this may
+                      show up in logs, and it will be stored in the state file. If true,
+                      the password will be auto-generated and stored in the Secret
+                      referenced by the authTokenSecretRef field.
                   autoMinorVersionUpgrade:
                     description: |-
                       Specifies whether minor version engine upgrades will be applied automatically to the underlying Cache Cluster instances during the maintenance window.

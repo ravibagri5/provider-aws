@@ -5,14 +5,17 @@ Copyright 2021 Upbound Inc.
 package elasticache
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	xpresource "github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/upjet/pkg/config"
 	"github.com/crossplane/upjet/pkg/config/conversion"
 
+	"github.com/crossplane/upjet/pkg/types/comments"
 	"github.com/upbound/provider-aws/apis/elasticache/v1beta1"
 	"github.com/upbound/provider-aws/apis/elasticache/v1beta2"
+	"github.com/upbound/provider-aws/config/common"
 )
 
 // Configure adds configurations for the elasticache group.
@@ -116,6 +119,29 @@ func Configure(p *config.Provider) { //nolint:gocyclo
 				return nil
 			}),
 		)
+		desc, _ := comments.New("If true, the password will be auto-generated and"+
+			" stored in the Secret referenced by the authTokenSecretRef field.",
+			comments.WithTFTag("-"))
+		r.TerraformResource.Schema["auto_generate_password"] = &schema.Schema{
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: desc.String(),
+		}
+		r.InitializerFns = append(r.InitializerFns,
+			common.PasswordGenerator(
+				"spec.forProvider.authTokenSecretRef",
+				"spec.forProvider.autoGeneratePassword",
+			))
+		r.TerraformResource.Schema["password"] = &schema.Schema{
+			Type:        schema.TypeString,
+			Optional:    true,
+			Sensitive:   true,
+			Description: "Password for the master DB user. If you set autoGeneratePassword to true, the Secret referenced here will be created or updated with generated password if it does not already contain one.",
+		}
+		r.TerraformResource.Schema["password"].Description = "Password for the " +
+			"master DB user. If you set autoGeneratePassword to true, the Secret" +
+			" referenced here will be created or updated with generated password" +
+			" if it does not already contain one."
 	})
 
 	p.AddResourceConfigurator("aws_elasticache_user_group", func(r *config.Resource) {

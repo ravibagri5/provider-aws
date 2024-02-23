@@ -9,6 +9,7 @@ metadata:
   name: example-${Rand.RFC1123Subdomain}
 spec:
   forProvider:
+    autoGeneratePassword: true
     engineVersion: "7.1"
     automaticFailoverEnabled: true
     description: example description

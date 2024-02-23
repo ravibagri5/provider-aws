@@ -9,6 +9,7 @@ metadata:
   name: example-${Rand.RFC1123Subdomain}
 spec:
   forProvider:
+    autoGeneratePassword: true
     automaticFailoverEnabled: true
     description: example description
     nodeType: cache.m4.large
